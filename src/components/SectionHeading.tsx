@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 export default function SectionHeading({
   label,
@@ -6,11 +7,14 @@ export default function SectionHeading({
   subtitle,
   action,
 }: {
-  label: string;      // e.g. "~/BLOG" or "/ projects"
-  title: string;      // e.g. "Latest research"
-  subtitle?: string;  // e.g. "fresh writeups & notes"
+  label: string;
+  title: string;
+  subtitle?: string;
   action?: { label: string; href: string };
 }) {
+  const actionClassName = 'terminal-text mt-1 shrink-0 text-sm text-term-blue hover:text-term-green transition-colors';
+  const isInternalAction = action?.href.startsWith('/');
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -30,12 +34,14 @@ export default function SectionHeading({
             </p>
           )}
         </div>
-        {action && (
-          <a
-            href={action.href}
-            className="terminal-text mt-1 shrink-0 text-sm text-term-blue hover:text-term-green transition-colors"
-          >
-            {action.label} →
+        {action && isInternalAction && (
+          <Link to={action.href} className={actionClassName}>
+            {action.label} -&gt;
+          </Link>
+        )}
+        {action && !isInternalAction && (
+          <a href={action.href} className={actionClassName}>
+            {action.label} -&gt;
           </a>
         )}
       </div>

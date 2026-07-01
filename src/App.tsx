@@ -7,7 +7,6 @@ import Footer from './components/Footer';
 import CommandPalette from './components/CommandPalette';
 import Home from './pages/Home';
 import About from './pages/About';
-import Certifications from './pages/Certifications';
 import Projects from './pages/Projects';
 import ProjectDetail from './pages/ProjectDetail';
 import Blogs from './pages/Blogs';
