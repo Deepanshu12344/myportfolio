@@ -10,7 +10,6 @@ import About from './pages/About';
 import Projects from './pages/Projects';
 import ProjectDetail from './pages/ProjectDetail';
 import Blogs from './pages/Blogs';
-import Writeups from './pages/Writeups';
 import BlogPost from './pages/BlogPost';
 import Contact from './pages/Contact';
 import NotFound from './pages/NotFound';
@@ -40,7 +39,6 @@ function AnimatedRoutes() {
           <Route path="/projects" element={<Projects />} />
           <Route path="/projects/:slug" element={<ProjectDetail />} />
           <Route path="/blogs" element={<Blogs />} />
-          <Route path="/writeups" element={<Writeups />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/admin" element={<Admin />} />
@@ -91,7 +89,7 @@ export default function App() {
         <Navbar onOpenPalette={() => setPaletteOpen(true)} isDark={isDark} onToggleTheme={toggleTheme} />
         <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
         <ScrollToTop />
-        <main className="relative z-10 pt-16">
+        <main className="relative z-10 pt-[4.5rem]">
           <AnimatedRoutes />
         </main>
         <Footer />

@@ -56,7 +56,6 @@ export default function Footer() {
                 ['/', 'Home'],
                 ['/blogs', 'Blogs'],
                 ['/projects', 'Projects'],
-                ['/writeups', 'Writeups'],
                 ['/certifications', 'Certifications'],
                 ['/about', 'About'],
                 ['/contact', 'Contact'],

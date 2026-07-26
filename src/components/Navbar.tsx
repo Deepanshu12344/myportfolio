@@ -7,7 +7,6 @@ const links = [
   { to: '/', label: 'home' },
   { to: '/blogs', label: 'blogs' },
   { to: '/projects', label: 'projects' },
-  { to: '/writeups', label: 'writeups' },
   // { to: '/certifications', label: 'certifications' },
   { to: '/about', label: 'about' },
   { to: '/contact', label: 'contact' },
@@ -44,13 +43,13 @@ export default function Navbar({
       }`}
       style={scrolled ? { borderColor: 'var(--border)' } : undefined}
     >
-      <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
+      <nav className="mx-auto flex h-[4.5rem] max-w-7xl items-center justify-between px-5 sm:px-8">
         {/* Logo — terminal style: ~/ */}
         <Link to="/" className="group focus-ring rounded-md">
-          <span className="terminal-text text-base font-bold tracking-tight">
+          <span className="terminal-text text-lg font-bold tracking-tight">
             <span className="text-term-green">~</span>
             <span className="text-term-blue">/</span>
-            <span className="ml-0.5 inline-block h-4 w-1.5 translate-y-0.5 bg-term-green" />
+            <span className="ml-0.5 inline-block h-[1.125rem] w-1.5 translate-y-0.5 bg-term-green" />
           </span>
         </Link>
 
@@ -62,7 +61,7 @@ export default function Navbar({
               to={l.to}
               end={l.to === '/'}
               className={({ isActive }) =>
-                `terminal-text relative rounded-md px-3 py-1.5 text-[13px] transition-colors focus-ring ${
+                `terminal-text relative rounded-md px-3.5 py-2 text-sm transition-colors focus-ring ${
                   isActive ? 'text-term-green' : ''
                 }`
               }
@@ -78,34 +77,34 @@ export default function Navbar({
           {/* Theme toggle */}
           <button
             onClick={onToggleTheme}
-            className="flex h-8 w-8 items-center justify-center rounded-md border transition-colors focus-ring"
+            className="flex h-9 w-9 items-center justify-center rounded-md border transition-colors focus-ring"
             style={{ borderColor: 'var(--border-strong)', color: 'var(--text-muted)' }}
             aria-label="Toggle theme"
           >
             {isDark
-              ? <Sun size={14} className="text-term-green" />
-              : <Moon size={14} className="text-term-blue" />}
+              ? <Sun size={15} className="text-term-green" />
+              : <Moon size={15} className="text-term-blue" />}
           </button>
 
           {/* Command palette shortcut */}
           <button
             onClick={onOpenPalette}
-            className="hidden items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[11px] terminal-text transition-colors focus-ring sm:flex"
+            className="hidden items-center gap-1.5 rounded-md border px-3 py-2 text-xs terminal-text transition-colors focus-ring sm:flex"
             style={{ borderColor: 'var(--border-strong)', color: 'var(--text-muted)' }}
             aria-label="Open command palette"
           >
-            <CommandIcon size={12} />
+            <CommandIcon size={13} />
             <span>K</span>
           </button>
 
           {/* Mobile hamburger */}
           <button
             onClick={() => setOpen((v) => !v)}
-            className="rounded-md border p-2 transition-colors focus-ring md:hidden"
+            className="rounded-md border p-2.5 transition-colors focus-ring md:hidden"
             style={{ borderColor: 'var(--border-strong)', color: 'var(--text-secondary)' }}
             aria-label="Toggle menu"
           >
-            {open ? <X size={16} /> : <Menu size={16} />}
+            {open ? <X size={17} /> : <Menu size={17} />}
           </button>
         </div>
       </nav>

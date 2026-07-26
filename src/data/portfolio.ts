@@ -27,7 +27,6 @@ export const skillGroups: SkillGroup[] = [
     items: [
       { name: 'Linux', level: 95 },
       { name: 'Windows', level: 85 },
-      { name: 'macOS', level: 70 },
     ],
   },
   {
@@ -35,9 +34,9 @@ export const skillGroups: SkillGroup[] = [
     icon: 'code',
     items: [
       { name: 'Python', level: 92 },
-      { name: 'JavaScript', level: 80 },
+      { name: 'JavaScript', level: 70 },
       { name: 'C++', level: 65 },
-      { name: 'Bash', level: 90 },
+      { name: 'Bash', level: 70 },
     ],
   },
   {
@@ -48,12 +47,8 @@ export const skillGroups: SkillGroup[] = [
       { name: 'Nmap', level: 95 },
       { name: 'Metasploit', level: 80 },
       { name: 'Wireshark', level: 85 },
-      { name: 'BloodHound', level: 88 },
-      { name: 'NetExec', level: 85 },
-      { name: 'Impacket', level: 82 },
       { name: 'Gobuster', level: 90 },
       { name: 'ffuf', level: 90 },
-      { name: 'Responder', level: 80 },
       { name: 'Hashcat', level: 85 },
       { name: 'John the Ripper', level: 82 },
       { name: 'Docker', level: 80 },
@@ -72,41 +67,26 @@ export type TimelineItem = {
 
 export const timeline: TimelineItem[] = [
   {
-    year: '2024 — Present',
-    title: 'Security Engineer',
-    org: 'Independent Research',
+    year: '2022 — 2026',
+    title: 'B.Tech, Computer Science Engineering',
+    org: 'Dr. Vishwanath Karad MIT World Peace University (MIT-WPU)',
     description:
-      'Conducting independent security research, publishing writeups, and participating in live CTF engagements. Focused on web exploitation and AD attack paths.',
-    tag: 'work',
-  },
-  {
-    year: '2023',
-    title: 'Penetration Tester',
-    org: 'Freelance Engagements',
-    description:
-      'Performed web application and network penetration tests for small teams. Delivered actionable reports with reproduction steps and remediation guidance.',
-    tag: 'work',
-  },
-  {
-    year: '2023',
-    title: 'OSCP Certified',
-    org: 'OffSec',
-    description: 'Earned the Offensive Security Certified Professional certification.',
-    tag: 'achievement',
-  },
-  {
-    year: '2022',
-    title: 'B.Tech, Computer Science',
-    org: 'University',
-    description: 'Graduated with a focus on systems and security coursework.',
+      'CGPA: 7.82. Developed strong foundations in computer networks, operating systems, programming, and cybersecurity.',
     tag: 'education',
   },
   {
-    year: '2021',
-    title: 'Started CTF Journey',
-    org: 'Hack The Box / TryHackMe',
-    description: 'Began actively playing CTFs and publishing machine writeups.',
-    tag: 'achievement',
+    year: '2022',
+    title: 'Senior Secondary (CBSE)',
+    org: 'Mother Divine Public School',
+    description: 'Completed Class XII with 82.6%.',
+    tag: 'education',
+  },
+  {
+    year: '2020',
+    title: 'Secondary (CBSE)',
+    org: 'Mother Divine Public School',
+    description: 'Completed Class X with 79.4%.',
+    tag: 'education',
   },
 ];
 

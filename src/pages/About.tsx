@@ -97,7 +97,7 @@ export default function About() {
         </div>
       </section>
 
-      {/* Timeline */}
+      {/* Education timeline */}
       <section className="mt-16">
         <div className="terminal-text mb-6 text-xs" style={{ color: 'var(--text-muted)' }}>
           <span className="text-term-green">$</span> git log --oneline

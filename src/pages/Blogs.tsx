@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Search, Clock, ArrowRight, Filter, X, FileText } from 'lucide-react';
 import { fetchPublishedPosts } from '../lib/posts';
 import type { BlogPost } from '../lib/supabase';
-import { blogCategories, difficulties, platforms } from '../data/portfolio';
+import { platforms } from '../data/portfolio';
 import SectionHeading from '../components/SectionHeading';
 
 const difficultyColor: Record<string, string> = {
@@ -18,8 +18,6 @@ export default function Blogs() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState('');
-  const [category, setCategory] = useState<string>('all');
-  const [difficulty, setDifficulty] = useState<string>('all');
   const [platform, setPlatform] = useState<string>('all');
   const [year, setYear] = useState<string>('all');
 
@@ -40,8 +38,6 @@ export default function Blogs() {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return posts.filter((p) => {
-      if (category !== 'all' && p.category !== category) return false;
-      if (difficulty !== 'all' && p.difficulty !== difficulty) return false;
       if (platform !== 'all' && p.platform !== platform) return false;
       if (year !== 'all' && new Date(p.published_at ?? p.created_at).getFullYear().toString() !== year)
         return false;
@@ -51,14 +47,12 @@ export default function Blogs() {
       }
       return true;
     });
-  }, [posts, query, category, difficulty, platform, year]);
+  }, [posts, query, platform, year]);
 
-  const activeFilters = [category !== 'all', difficulty !== 'all', platform !== 'all', year !== 'all', query !== ''].filter(Boolean).length;
+  const activeFilters = [platform !== 'all', year !== 'all', query !== ''].filter(Boolean).length;
 
   const reset = () => {
     setQuery('');
-    setCategory('all');
-    setDifficulty('all');
     setPlatform('all');
     setYear('all');
   };
@@ -88,8 +82,6 @@ export default function Blogs() {
             )}
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <Select value={category} onChange={setCategory} options={['all', ...blogCategories]} label="category" />
-            <Select value={difficulty} onChange={setDifficulty} options={['all', ...difficulties]} label="difficulty" />
             <Select value={platform} onChange={setPlatform} options={['all', ...platforms]} label="platform" />
             <Select value={year} onChange={setYear} options={['all', ...years]} label="year" />
             {activeFilters > 0 && (
