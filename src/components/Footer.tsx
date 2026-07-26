@@ -56,10 +56,8 @@ export default function Footer() {
                 ['/', 'Home'],
                 ['/blogs', 'Blogs'],
                 ['/projects', 'Projects'],
-                ['/certifications', 'Certifications'],
                 ['/about', 'About'],
                 ['/contact', 'Contact'],
-                ['/admin', 'Admin'],
               ].map(([to, label]) => (
                 <Link
                   key={to}

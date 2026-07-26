@@ -43,7 +43,6 @@ export default function CommandPalette({
       { id: 'home', label: 'Home', hint: '/', icon: Home, action: go('/'), keywords: 'home landing' },
       { id: 'blogs', label: 'Blogs', hint: '/blogs', icon: FileText, action: go('/blogs'), keywords: 'blog posts archive' },
       { id: 'projects', label: 'Projects', hint: '/projects', icon: FolderGit2, action: go('/projects'), keywords: 'projects work' },
-      { id: 'certifications', label: 'Certifications', hint: '/certifications', icon: Award, action: go('/certifications'), keywords: 'certs certifications' },
       { id: 'about', label: 'About', hint: '/about', icon: User, action: go('/about'), keywords: 'about bio skills' },
       { id: 'contact', label: 'Contact', hint: '/contact', icon: Mail, action: go('/contact'), keywords: 'contact email' },
       {
