@@ -48,6 +48,7 @@ export default function InteractiveTerminal({
           <span>contact</span>
           <span>github</span>
           <span>linkedin</span>
+          <span>tryhackme</span>
           <span>clear</span>
         </div>
       ),
@@ -87,6 +88,11 @@ export default function InteractiveTerminal({
           opening LinkedIn...
         </a>
       ),
+      tryhackme: (
+        <a className="text-term-green underline-offset-4 hover:underline" href={profile.socials.tryhackme} target="_blank" rel="noreferrer">
+          opening TryHackMe...
+        </a>
+      ),
     }),
     [],
   );
@@ -110,6 +116,9 @@ export default function InteractiveTerminal({
     }
     if (command === 'linkedin') {
       window.open(profile.socials.linkedin, '_blank', 'noreferrer');
+    }
+    if (command === 'tryhackme') {
+      window.open(profile.socials.tryhackme, '_blank', 'noreferrer');
     }
 
     const output = commands[command as keyof typeof commands] ?? (
@@ -166,8 +175,9 @@ export default function InteractiveTerminal({
             onChange={(e) => setInput(e.target.value)}
             spellCheck={false}
             autoComplete="off"
+            autoFocus
             aria-label="Terminal command"
-            className="min-w-0 flex-1 bg-transparent text-sm outline-none"
+            className="min-w-0 flex-1 bg-transparent text-sm caret-term-green outline-none"
             style={{ color: 'var(--terminal-command)' }}
           />
         </form>

@@ -50,7 +50,7 @@ export default function Navbar({
           <span className="terminal-text text-base font-bold tracking-tight">
             <span className="text-term-green">~</span>
             <span className="text-term-blue">/</span>
-            <span className="ml-0.5 inline-block h-4 w-1.5 translate-y-0.5 bg-term-green animate-blink" />
+            <span className="ml-0.5 inline-block h-4 w-1.5 translate-y-0.5 bg-term-green" />
           </span>
         </Link>
 

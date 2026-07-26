@@ -7,6 +7,7 @@ export const profile = {
   socials: {
     github: 'https://github.com/Deepanshu12344',
     linkedin: 'https://www.linkedin.com/in/deepanshu-sharma-164057250/',
+    tryhackme: 'https://tryhackme.com/p/Deepanshu12345',
   },
   focus: ['Web Security', 'Cloud Security', 'Red Teaming', 'Active Directory', 'Malware Analysis'],
   status: 'Learning. Building. Breaking. Securing.',

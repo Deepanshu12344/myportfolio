@@ -66,7 +66,7 @@ export default function Home() {
             <a href={profile.socials.linkedin} target="_blank" rel="noreferrer" className="btn-ghost">
               <Linkedin size={15} /> LinkedIn
             </a>
-            <a href="/Deepanshu_Resume_SOC2.pdf" className="btn-ghost" download="Deepanshu_Resume_SOC2.pdf">
+            <a href="/Deepanshu_Resume_Cybersec.pdf%20(1).pdf" className="btn-ghost" download="Deepanshu_Resume_Cybersec.pdf (1).pdf">
               <Download size={15} /> Resume
             </a>
           </div>
