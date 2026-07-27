@@ -1,6 +1,15 @@
 import { supabase, type BlogPost } from './supabase';
 import { seedPosts } from '../data/seedPosts';
 
+const defaultBlogSlugs = new Set([
+  'htb-lame',
+  'thm-rootme',
+  'bypassing-jwt-signature-validation',
+  'kerberoasting-without-mimikatz',
+  'enumerating-misconfigured-s3-buckets',
+  'reverse-shell-cheat-sheet',
+]);
+
 // Fetch all published posts. Falls back to local seed data if the DB is
 // unreachable or empty, so the blog always has content.
 export async function fetchPublishedPosts(): Promise<BlogPost[]> {
@@ -12,13 +21,15 @@ export async function fetchPublishedPosts(): Promise<BlogPost[]> {
       .order('published_at', { ascending: false });
     if (error) throw error;
     if (!data || data.length === 0) return seedFallback();
-    return mergeWithSeed(data as BlogPost[]);
+    return mergeWithSeed((data as BlogPost[]).filter((post) => !defaultBlogSlugs.has(post.slug)));
   } catch {
     return seedFallback();
   }
 }
 
 export async function fetchPostBySlug(slug: string): Promise<BlogPost | null> {
+  if (defaultBlogSlugs.has(slug)) return null;
+
   try {
     const { data, error } = await supabase
       .from('blog_posts')
@@ -49,7 +60,7 @@ export async function fetchAllPostsAdmin(): Promise<BlogPost[]> {
     .select('*')
     .order('created_at', { ascending: false });
   if (error) throw error;
-  return (data ?? []) as BlogPost[];
+  return (data ?? []).filter((post) => !defaultBlogSlugs.has(post.slug)) as BlogPost[];
 }
 
 function seedFallback(): BlogPost[] {
@@ -59,13 +70,22 @@ function seedFallback(): BlogPost[] {
 // If a DB row has empty content, fill it from the local seed of the same slug
 // so the rich writeup markdown is shown.
 function mergeWithSeed(rows: BlogPost[]): BlogPost[] {
-  return rows.map((row) => {
+  const databasePosts = rows.map((row) => {
     if (!row.content || row.content.trim() === '') {
       const seed = seedPosts.find((p) => p.slug === row.slug);
       if (seed) row.content = seed.content;
     }
     return row;
   });
+
+  const databaseSlugs = new Set(databasePosts.map((post) => post.slug));
+  const missingSeedPosts = seedPosts
+    .filter((post) => !databaseSlugs.has(post.slug))
+    .map((post) => seedToBlogPost(post) as BlogPost);
+
+  return [...databasePosts, ...missingSeedPosts].sort(
+    (a, b) => new Date(b.published_at ?? b.created_at).getTime() - new Date(a.published_at ?? a.created_at).getTime(),
+  );
 }
 
 function seedToBlogPost(seed: (typeof seedPosts)[number]): Omit<BlogPost, 'id' | 'author_id' | 'seo_title' | 'seo_description' | 'created_at' | 'updated_at'> & Partial<BlogPost> {

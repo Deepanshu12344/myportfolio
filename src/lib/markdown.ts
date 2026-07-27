@@ -236,47 +236,12 @@ function renderCodeBlock(code: string, lang: string): string {
   </div>`;
 }
 
-// Minimal token-based highlighter for a few languages. Not a full parser —
-// good enough for writeup snippets (bash, python, sql, json, text).
 function highlightCode(code: string, lang: string): string {
-  const escaped = escapeHtml(code);
-  if (!lang || ['text', 'txt', 'plain'].includes(lang.toLowerCase())) {
-    return `<span class="tok-plain">${escaped}</span>`;
-  }
-  const l = lang.toLowerCase();
-  if (['bash', 'sh', 'shell', 'console', 'powershell', 'ps1'].includes(l)) {
-    return escaped
-      .replace(/(^|\n)(\$\s.*)/g, '$1<span class="tok-prompt">$2</span>')
-      .replace(/(^|\n)(#\s.*)/g, '$1<span class="tok-comment">$2</span>')
-      .replace(/\b(nmap|gobuster|ffuf|hashcat|john|msfconsole|use|set|exploit|python|python3|bash|sh|nc|curl|wget|cat|grep|find|chmod|chown|mount|showmount|export|cd|ls|mkdir|gcc|cp|echo|sudo|ssh|scp|aws|docker|git)\b/g, '<span class="tok-command">$1</span>')
-      .replace(/(-{1,2}[a-zA-Z][a-zA-Z0-9-]*)/g, '<span class="tok-flag">$1</span>')
-      .replace(/(\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b)/g, '<span class="tok-num">$1</span>')
-      .replace(/("[^"]*")/g, '<span class="tok-string">$1</span>')
-      .replace(/('[^']*')/g, '<span class="tok-string">$1</span>');
-  }
-  if (['python', 'py'].includes(l)) {
-    return escaped
-      .replace(/(^|\n)(\s*#.*)/g, '$1<span class="tok-comment">$2</span>')
-      .replace(/\b(import|from|as|def|class|return|if|else|elif|for|while|try|except|with|lambda|None|True|False|self)\b/g, '<span class="tok-kw">$1</span>')
-      .replace(/\b([a-zA-Z_]\w*)(?=\()/g, '<span class="tok-fn">$1</span>')
-      .replace(/("[^"]*")/g, '<span class="tok-string">$1</span>')
-      .replace(/('[^']*')/g, '<span class="tok-string">$1</span>')
-      .replace(/\b(\d+)\b/g, '<span class="tok-num">$1</span>');
-  }
-  if (['sql'].includes(l)) {
-    return escaped
-      .replace(/(--.*$)/gm, '<span class="tok-comment">$1</span>')
-      .replace(/\b(SELECT|INSERT|UPDATE|DELETE|FROM|WHERE|JOIN|LEFT|RIGHT|INNER|ON|AND|OR|NOT|NULL|VALUES|INTO|TABLE|CREATE|ALTER|DROP|POLICY|ENABLE|ROW|LEVEL|SECURITY|FOR|TO|USING|WITH|CHECK|REFERENCES|DEFAULT|PRIMARY|KEY|UNIQUE|INDEX|TRIGGER|FUNCTION|RETURNS|BEGIN|END|LANGUAGE|PLPGSQL|SET|NEW|CURRENT|TIMESTAMPTZ|UUID|TEXT|BOOLEAN|NOW|GEN_RANDOM_UUID)\b/gi, '<span class="tok-kw">$1</span>')
-      .replace(/('[^']*')/g, '<span class="tok-string">$1</span>');
-  }
-  if (['json'].includes(l)) {
-    return escaped
-      .replace(/("[^"]*")(\s*:)/g, '<span class="tok-key">$1</span>$2')
-      .replace(/(:\s*)("[^"]*")/g, '$1<span class="tok-string">$2</span>')
-      .replace(/\b(true|false|null)\b/g, '<span class="tok-kw">$1</span>')
-      .replace(/\b(\d+)\b/g, '<span class="tok-num">$1</span>');
-  }
-  return escaped;
+  // Keep commands as plain escaped text. The old regex highlighter edited its
+  // own generated HTML (for example, matching "-command" in a class name),
+  // which leaked token markup into the rendered command.
+  void lang;
+  return escapeHtml(code);
 }
 
 export function estimateReadingTime(md: string): number {

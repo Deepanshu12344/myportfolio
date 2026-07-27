@@ -37,11 +37,6 @@ export default function ProjectDetail() {
           {project.title}
         </h1>
 
-        <div className="relative mt-6 overflow-hidden rounded-xl border border-white/8">
-          <img src={project.image} alt={project.title} className="h-64 w-full object-cover opacity-80" />
-          <div className="absolute inset-0 bg-base-900/60" />
-        </div>
-
         <div className="mt-6 flex flex-wrap gap-3">
           <a
             href={project.github}

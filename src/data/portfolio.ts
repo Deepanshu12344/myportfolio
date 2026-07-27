@@ -160,100 +160,49 @@ export type Project = {
   github: string;
   demo: string | null;
   accent: 'green' | 'cyan' | 'purple';
-  image: string;
+  // image: string;
 };
 
 export const projects: Project[] = [
   {
-    slug: 'red-team-toolkit',
-    title: 'Red Team Toolkit',
+    slug: 'secure-cicd-pipeline',
+    title: 'Secure CI/CD Pipeline',
     description:
-      'A curated collection of offensive scripts, payloads, and automation for adversary simulation engagements.',
+      'AI-powered DevSecOps platform that scans code, dependencies, and configs during CI/CD and assigns ML-based risk scores to flag or block risky builds.',
     longDescription:
-      'Modular Python framework bundling common red team operations: C2 helper scripts, payload generation, AD enumeration wrappers, and reporting templates. Designed to be drop-in for engagements.',
-    tech: ['Python', 'Impacket', 'NetExec', 'Sliver'],
-    tags: ['Red Teaming', 'Automation', 'Offensive'],
-    github: 'https://github.com/Deepanshu12344/red-team-toolkit',
-    demo: null,
-    accent: 'green',
-    image:
-      'https://images.pexels.com/photos/5380642/pexels-photo-5380642.jpeg?auto=compress&cs=tinysrgb&w=1200',
+      'An enterprise-grade DevSecOps solution combining a React dashboard, a Node.js/Express backend API, and a Python ML engine to automatically scan for vulnerabilities in code, dependencies, and configurations during the CI/CD pipeline. Risk scores are calculated using a weighted vulnerability model (SQL injection, auth bypass, XSS, weak encryption, insecure dependencies, and more), with configurable thresholds to allow, warn, or block builds. Includes a GitHub Actions workflow that runs security scans on every push/PR, uploads report artifacts, and builds/pushes Docker images for backend, frontend, and ML services. A companion VS Code extension gives developers real-time security feedback while coding.',
+    tech: ['React', 'Node.js', 'Express', 'Python', 'Flask', 'Docker', 'GitHub Actions', 'MongoDB'],
+    tags: ['DevSecOps', 'CI/CD', 'Risk Scoring', 'Vulnerability Detection'],
+    github: 'https://github.com/Deepanshu12344/secure_cicd_pipeline',
+    demo: 'https://secure-cicd-pipeline.vercel.app',
+    accent: 'purple',
   },
   {
-    slug: 'malware-sandbox',
-    title: 'Malware Sandbox',
+    slug: 'sentinelx',
+    title: 'SentinelX',
     description:
-      'Lightweight detonation chamber for suspicious binaries with network capture, API tracing, and IOC extraction.',
+      'Security monitoring dashboard with a background malware-scanning worker, built on React, Redux, and Supabase.',
     longDescription:
-      'Isolated Docker-based sandbox that runs unknown samples, captures network traffic with tcpdump, logs syscalls via strace, and produces a summary report of observed indicators of compromise.',
-    tech: ['Docker', 'Python', 'tcpdump', 'YARA'],
-    tags: ['Malware Analysis', 'Detection', 'Forensics'],
-    github: 'https://github.com/Deepanshu12344/malware-sandbox',
+      'A React + TypeScript dashboard (Vite, Redux Toolkit, Recharts) backed by Supabase for auth and data storage, paired with a standalone Node.js malware-worker service for scanning and reporting on suspicious files or activity. The frontend visualizes findings and trends via Recharts, with routing handled by React Router and state managed through Redux Toolkit and React Query.',
+    tech: ['React', 'TypeScript', 'Redux Toolkit', 'Supabase', 'Vite', 'Node.js', 'Recharts'],
+    tags: ['Security', 'Malware Detection', 'Dashboard'],
+    github: 'https://github.com/Deepanshu12344/sentinelx',
+    demo: 'https://sentinelx-delta.vercel.app/',
+    accent: 'green',
+},
+{
+    slug: 'proxy-server',
+    title: 'Multithreaded Proxy Server',
+    description:
+      'A multithreaded HTTP proxy server written in C, with an optional in-memory caching layer for repeated requests.',
+    longDescription:
+      'A from-scratch HTTP proxy server implemented in C using POSIX threads to handle multiple client connections concurrently. Includes a custom HTTP request parser (proxy_parse.c/h) for reading and validating incoming requests, and two server variants: one with an in-memory LRU-style cache to serve repeated requests faster and reduce redundant upstream calls, and one without caching for a simpler baseline. Demonstrates core systems concepts like socket programming, multithreading with mutex/semaphore synchronization, and manual HTTP parsing.',
+    tech: ['C', 'POSIX Threads', 'Sockets', 'HTTP'],
+    tags: ['Networking', 'Systems Programming', 'Caching'],
+    github: 'https://github.com/Deepanshu12344/Proxy_Server',
     demo: null,
     accent: 'cyan',
-    image:
-      'https://images.pexels.com/photos/60504/security-protection-anti-virus-software-60504.jpeg?auto=compress&cs=tinysrgb&w=1200',
-  },
-  {
-    slug: 'soc-dashboard',
-    title: 'SOC Dashboard',
-    description:
-      'Real-time security operations dashboard aggregating alerts, threat feeds, and SIEM metrics into one pane.',
-    longDescription:
-      'Web-based SOC console that ingests alerts from multiple sources, normalizes them, and presents a prioritized queue with enrichment from threat intel feeds. Built for small security teams.',
-    tech: ['React', 'TypeScript', 'Elastic', 'Python'],
-    tags: ['SOC', 'Detection', 'Monitoring'],
-    github: 'https://github.com/Deepanshu12344/soc-dashboard',
-    demo: null,
-    accent: 'purple',
-    image:
-      'https://images.pexels.com/photos/1181271/pexels-photo-1181271.jpeg?auto=compress&cs=tinysrgb&w=1200',
-  },
-  {
-    slug: 'osint-toolkit',
-    title: 'OSINT Toolkit',
-    description:
-      'Reconnaissance toolkit for passive intelligence gathering — domains, emails, leaks, and infrastructure mapping.',
-    longDescription:
-      'CLI + web interface that orchestrates passive OSINT sources, deduplicates results, and exports structured reports. Useful for pre-engagement recon and threat actor profiling.',
-    tech: ['Python', 'FastAPI', 'React', 'theHarvester'],
-    tags: ['OSINT', 'Recon', 'Intelligence'],
-    github: 'https://github.com/Deepanshu12344/osint-toolkit',
-    demo: null,
-    accent: 'green',
-    image:
-      'https://images.pexels.com/photos/546819/pexels-photo-546819.jpeg?auto=compress&cs=tinysrgb&w=1200',
-  },
-  {
-    slug: 'password-auditor',
-    title: 'Password Auditor',
-    description:
-      'Offline password policy auditor that evaluates hash sets against dictionaries and reports weak password prevalence.',
-    longDescription:
-      'Tool for security teams to audit the strength of their password baseline. Runs hashcat in audit mode against a sanitized dump and produces a statistical report without exposing plaintext.',
-    tech: ['Python', 'Hashcat', 'Jupyter'],
-    tags: ['Password', 'Audit', 'Cracking'],
-    github: 'https://github.com/Deepanshu12344/password-auditor',
-    demo: null,
-    accent: 'cyan',
-    image:
-      'https://images.pexels.com/photos/270700/pexels-photo-270700.jpeg?auto=compress&cs=tinysrgb&w=1200',
-  },
-  {
-    slug: 'ad-attack-playbook',
-    title: 'AD Attack Playbook',
-    description:
-      'Documented active directory attack chains with reproducible lab setups and detection guidance for each step.',
-    longDescription:
-      'Open knowledge base of AD attack techniques mapped to MITRE ATT&CK, each with a lab setup script, exploitation commands, and defensive detection rules for Sentinel/Elastic.',
-    tech: ['Markdown', 'PowerShell', 'Impacket', 'BloodHound'],
-    tags: ['Active Directory', 'Detection', 'MITRE'],
-    github: 'https://github.com/Deepanshu12344/ad-attack-playbook',
-    demo: null,
-    accent: 'purple',
-    image:
-      'https://images.pexels.com/photos/1181244/pexels-photo-1181244.jpeg?auto=compress&cs=tinysrgb&w=1200',
-  },
+},
 ];
 
 export const blogCategories = [
